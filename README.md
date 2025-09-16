@@ -55,7 +55,7 @@ npm start
 ```
 or
 ```bash
-node discordTicketBot.js
+node main.js
 ```
 
 ## Features
