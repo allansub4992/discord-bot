@@ -6,7 +6,7 @@
 const { EmbedBuilder, version: djsVersion } = require('discord.js')
 const { config } = require('./config')
 const { getStorageInfo, getEmbedStats, getTicketStats } = require('./storage')
-const { checkBotPermissions } = require('./permissions')
+const { checkBotPermissions, getUserPermissionLevel } = require('./permissions')
 
 // Get bot status information
 function getBotStatus(client, guild) {
@@ -96,9 +96,25 @@ function getSystemStats(client) {
 }
 
 // Create bot status embed
-function createBotStatusEmbed(client, guild) {
+function createBotStatusEmbed(client, guild, user = null) {
   const botStatus = getBotStatus(client, guild)
   const hasAdmin = guild.members.me.permissions.has('Administrator')
+  
+  // Get user permission info if user is provided
+  let userPermInfo = ''
+  if (user) {
+    const member = guild.members.cache.get(user.id)
+    if (member) {
+      const userLevel = getUserPermissionLevel(member)
+      const permissionLabels = {
+        'owner': '👑 Owner',
+        'admin': '🛡️ Administrator', 
+        'staff': '👨‍💼 Staff',
+        'user': '👤 User'
+      }
+      userPermInfo = `\n\n**Izin Anda:** ${permissionLabels[userLevel] || '👤 User'}`
+    }
+  }
   
   const embed = new EmbedBuilder()
     .setTitle('🤖 Status Bot')
@@ -114,7 +130,7 @@ function createBotStatusEmbed(client, guild) {
           `👥 **Users:** ${botStatus.users}`,
           `🌐 **Servers:** ${botStatus.guilds}`,
           `📝 **Channels:** ${botStatus.channels}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       },
       {
@@ -124,14 +140,14 @@ function createBotStatusEmbed(client, guild) {
           `🟢 **Node.js:** ${botStatus.nodeVersion}`,
           `📚 **Discord.js:** v${botStatus.djsVersion}`,
           `📅 **Bergabung:** <t:${Math.floor(botStatus.joinedAt.getTime() / 1000)}:R>`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       },
       {
         name: '🛡️ Status Permissions',
-        value: hasAdmin ? 
+        value: (hasAdmin ? 
           '✅ **Administrator** - Semua izin tersedia' :
-          '⚠️ **Terbatas** - Gunakan `/ticket permissions` untuk detail',
+          '⚠️ **Terbatas** - Gunakan `/ticket permissions` untuk detail') + userPermInfo,
         inline: false
       }
     )
@@ -145,7 +161,7 @@ function createBotStatusEmbed(client, guild) {
 }
 
 // Create server info embed
-function createServerInfoEmbed(guild) {
+function createServerInfoEmbed(guild, user = null) {
   const serverInfo = getServerInfo(guild)
   
   const embed = new EmbedBuilder()
@@ -160,7 +176,7 @@ function createServerInfoEmbed(guild) {
           `👤 **Owner:** ${serverInfo.owner}`,
           `📅 **Dibuat:** <t:${Math.floor(serverInfo.created.getTime() / 1000)}:F>`,
           `🔒 **Verification:** Level ${serverInfo.verificationLevel}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       },
       {
@@ -170,7 +186,7 @@ function createServerInfoEmbed(guild) {
           `🟢 **Online:** ${serverInfo.onlineMembers}`,
           `👨‍💼 **Humans:** ${serverInfo.humans}`,
           `🤖 **Bots:** ${serverInfo.bots}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       },
       {
@@ -181,7 +197,7 @@ function createServerInfoEmbed(guild) {
           `📁 **Categories:** ${serverInfo.channels.categories}`,
           `🎭 **Roles:** ${serverInfo.roles}`,
           `😀 **Emojis:** ${serverInfo.emojis}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       }
     )
@@ -204,12 +220,12 @@ function createServerInfoEmbed(guild) {
 }
 
 // Create statistics embed
-function createStatsEmbed(client, guild) {
+function createStatsEmbed(client, guild, user = null) {
   const stats = getSystemStats(client)
   
   const embed = new EmbedBuilder()
     .setTitle('📊 Statistik Bot')
-    .setColor(config.embeds.infoColor)
+    .setColor(0x00AE86) // Use direct color value instead of config
     .addFields(
       {
         name: '📝 Embed Statistics',
@@ -219,7 +235,7 @@ function createStatsEmbed(client, guild) {
           `🕒 **Terakhir:** ${stats.embedStats.last_created ? 
             `<t:${Math.floor(new Date(stats.embedStats.last_created).getTime() / 1000)}:R>` : 
             'Belum ada'}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       },
       {
@@ -228,7 +244,7 @@ function createStatsEmbed(client, guild) {
           `🆕 **Total Dibuat:** ${stats.ticketStats.total_created}`,
           `🔒 **Total Ditutup:** ${stats.ticketStats.total_closed}`,
           `📂 **Total Diarsip:** ${stats.ticketStats.total_archived}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       },
       {
@@ -238,7 +254,7 @@ function createStatsEmbed(client, guild) {
           `🎫 **Active Tickets:** ${stats.storageInfo.counts.active_tickets}`,
           `🎨 **Custom Templates:** ${stats.storageInfo.counts.custom_templates}`,
           `⚡ **Commands:** ${stats.commands}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       }
     )
@@ -249,7 +265,7 @@ function createStatsEmbed(client, guild) {
 }
 
 // Create system info embed
-function createSystemInfoEmbed(client, guild) {
+function createSystemInfoEmbed(client, guild, user = null) {
   const botStatus = getBotStatus(client, guild)
   const stats = getSystemStats(client)
   
@@ -273,7 +289,7 @@ function createSystemInfoEmbed(client, guild) {
           `📚 **Discord.js:** v${botStatus.djsVersion}`,
           `💾 **Memory Usage:** ${botStatus.memory}`,
           `⏱️ **Process Uptime:** ${botStatus.uptime}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       },
       {
@@ -283,7 +299,7 @@ function createSystemInfoEmbed(client, guild) {
           `📝 **Embeds:** ${formatBytes(stats.storageInfo.sizes.embeds)}`,
           `🎫 **Tickets:** ${formatBytes(stats.storageInfo.sizes.tickets)}`,
           `🎨 **Templates:** ${formatBytes(stats.storageInfo.sizes.templates)}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       },
       {
@@ -293,7 +309,7 @@ function createSystemInfoEmbed(client, guild) {
           `🔗 **Shard ID:** ${guild.shardId || 0}`,
           `📡 **Status:** ${client.user.presence?.status || 'online'}`,
           `⚡ **Ready Since:** <t:${Math.floor(client.readyTimestamp / 1000)}:R>`
-        ].join('\\n'),
+        ].join('\n'),
         inline: false
       }
     )
@@ -304,11 +320,27 @@ function createSystemInfoEmbed(client, guild) {
 }
 
 // Create comprehensive status embed
-function createFullStatusEmbed(client, guild) {
+function createFullStatusEmbed(client, guild, user = null) {
   const botStatus = getBotStatus(client, guild)
   const serverInfo = getServerInfo(guild)
   const stats = getSystemStats(client)
   const hasAdmin = guild.members.me.permissions.has('Administrator')
+  
+  // Get user permission info if user is provided
+  let userFooterInfo = ''
+  if (user) {
+    const member = guild.members.cache.get(user.id)
+    if (member) {
+      const userLevel = getUserPermissionLevel(member)
+      const permissionLabels = {
+        'owner': 'Owner',
+        'admin': 'Administrator', 
+        'staff': 'Staff',
+        'user': 'User'
+      }
+      userFooterInfo = ` | Your Role: ${permissionLabels[userLevel] || 'User'}`
+    }
+  }
   
   const embed = new EmbedBuilder()
     .setTitle('📋 Status Lengkap')
@@ -323,7 +355,7 @@ function createFullStatusEmbed(client, guild) {
           `🏓 Ping: ${botStatus.ping}ms`,
           `🛡️ Permissions: ${hasAdmin ? '✅ Admin' : '⚠️ Limited'}`,
           `💾 Memory: ${botStatus.memory}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       },
       {
@@ -333,7 +365,7 @@ function createFullStatusEmbed(client, guild) {
           `📝 Channels: ${serverInfo.channels.total}`,
           `🎭 Roles: ${serverInfo.roles}`,
           `⭐ Boost: Level ${serverInfo.boostLevel}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       },
       {
@@ -343,12 +375,12 @@ function createFullStatusEmbed(client, guild) {
           `🎫 Tickets: ${stats.ticketStats.total_created}`,
           `🎨 Templates: ${stats.storageInfo.counts.custom_templates}`,
           `⚡ Commands: ${stats.commands}`
-        ].join('\\n'),
+        ].join('\n'),
         inline: true
       }
     )
     .setFooter({ 
-      text: `${client.user.username} | Status: Active | Node.js ${process.version}`,
+      text: `${client.user.username} | Status: Active | Node.js ${process.version}${userFooterInfo}`,
       iconURL: guild.iconURL()
     })
     .setTimestamp()

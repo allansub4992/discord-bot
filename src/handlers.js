@@ -923,26 +923,27 @@ async function handleStatusCommand(interaction) {
   const statusType = interaction.options.getString('type') || 'full'
   const guild = interaction.guild
   const client = interaction.client
+  const user = interaction.user
 
   try {
     let statusEmbed
     
     switch (statusType) {
       case 'bot':
-        statusEmbed = createBotStatusEmbed(client, guild)
+        statusEmbed = createBotStatusEmbed(client, guild, user)
         break
       case 'server':
-        statusEmbed = createServerInfoEmbed(guild)
+        statusEmbed = createServerInfoEmbed(guild, user)
         break
       case 'stats':
-        statusEmbed = createStatsEmbed(client, guild)
+        statusEmbed = createStatsEmbed(client, guild, user)
         break
       case 'system':
-        statusEmbed = createSystemInfoEmbed(client, guild)
+        statusEmbed = createSystemInfoEmbed(client, guild, user)
         break
       case 'full':
       default:
-        statusEmbed = createFullStatusEmbed(client, guild)
+        statusEmbed = createFullStatusEmbed(client, guild, user)
         break
     }
     
