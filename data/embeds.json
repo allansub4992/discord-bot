@@ -1,0 +1,78 @@
+{
+  "saved_embeds": {
+    "1417472970334539786": {
+      "config": {
+        "nama": "Roblox Credit 500",
+        "jenis": "Robux",
+        "harga": "Rp 75.000",
+        "deskripsi": null,
+        "gambar": null,
+        "thumbnail": null,
+        "warna": null,
+        "type": "product"
+      },
+      "author_id": "500292287004147713",
+      "channel_id": "1417469306492686496",
+      "created_at": "2025-09-16T11:31:31.844Z",
+      "edited_count": 0
+    },
+    "1417505651294470289": {
+      "config": {
+        "nama": "Robux Kelipatan 500 R",
+        "jenis": "Topup Game",
+        "harga": "Rp 75.000",
+        "deskripsi": "via login roblox",
+        "gambar": null,
+        "thumbnail": null,
+        "warna": "669bbc",
+        "order_channel": "1417469306492686496",
+        "type": "product",
+        "deleted": true,
+        "deleted_at": "2025-09-16T13:47:08.777Z"
+      },
+      "author_id": "500292287004147713",
+      "channel_id": "1417469306492686496",
+      "created_at": "2025-09-16T13:41:23.577Z",
+      "edited_count": 2,
+      "last_edited": "2025-09-16T13:47:08.777Z"
+    },
+    "1417507629877690430": {
+      "config": {
+        "nama": "Robux 500 kelipatan",
+        "jenis": "Topup Game",
+        "harga": "Rp 75.000",
+        "deskripsi": "via login topup",
+        "gambar": null,
+        "thumbnail": null,
+        "warna": "#669bbc",
+        "order_channel": "1417469432749625384",
+        "type": "product"
+      },
+      "author_id": "500292287004147713",
+      "channel_id": "1417469306492686496",
+      "created_at": "2025-09-16T13:49:15.269Z",
+      "edited_count": 0
+    },
+    "1417508419010691143": {
+      "config": {
+        "title": "Ticket Support",
+        "description": "Untuk Order atau sekedar tanya jawab dan keluah lansgun tekan tombol Create Ticket",
+        "color": null,
+        "thumbnail": null,
+        "image": null,
+        "footer": "Dibuat Zioblox's Server",
+        "type": "basic"
+      },
+      "author_id": "500292287004147713",
+      "channel_id": "1417469432749625384",
+      "created_at": "2025-09-16T13:52:23.496Z",
+      "edited_count": 0
+    }
+  },
+  "templates": {},
+  "statistics": {
+    "total_created": 4,
+    "total_edited": 2,
+    "last_created": "2025-09-16T13:52:23.496Z"
+  }
+}

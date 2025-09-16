@@ -1,0 +1,13 @@
+{
+  "guild_settings": {},
+  "embed_defaults": {
+    "color": "00AE86",
+    "footer_text": "Powered by Discord Bot",
+    "timestamp": true
+  },
+  "ticket_settings": {
+    "auto_close_inactive": false,
+    "inactive_hours": 24,
+    "log_channel": null
+  }
+}
