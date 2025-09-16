@@ -2,7 +2,7 @@
 
 ## Prerequisites
 - Node.js installed on your system
-- A Discord application and bot created at https://discord.com/developers/applications
+- A Discord application and bot created at https://discord.com/allansub
 
 ## Setup Instructions
 
