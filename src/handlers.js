@@ -351,14 +351,26 @@ async function handleTicketCommand(interaction) {
         break
 
       case 'close':
+        // Check if user has permission to close tickets (admin only)
+        if (!canManage(member)) {
+          await interaction.reply({ 
+            content: 'Hanya admin yang dapat menutup tiket.', 
+            flags: 64
+          })
+          return
+        }
+        
         const closeResult = await closeTicket(interaction, categories)
         if (closeResult.success) {
           // Response is handled in closeTicket function
         } else {
-          await interaction.reply({
-            content: closeResult.message,
-            flags: closeResult.ephemeral ? 64 : 0
-          })
+          // Only reply if there's an error and no previous reply
+          if (!interaction.replied && !interaction.deferred) {
+            await interaction.reply({
+              content: closeResult.message,
+              flags: closeResult.ephemeral ? 64 : 0
+            })
+          }
         }
         break
 
@@ -409,10 +421,17 @@ async function handleTicketCommand(interaction) {
     }
   } catch (error) {
     console.error('Error in ticket command:', error)
-    await interaction.reply({ 
-      content: `Terjadi kesalahan: ${error.message}`, 
-      flags: 64
-    })
+    // Only reply if interaction hasn't been replied to yet
+    if (!interaction.replied && !interaction.deferred) {
+      try {
+        await interaction.reply({ 
+          content: `Terjadi kesalahan: ${error.message}`, 
+          flags: 64
+        })
+      } catch (replyError) {
+        console.error('Error sending error reply:', replyError)
+      }
+    }
   }
 }
 

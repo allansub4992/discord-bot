@@ -11,7 +11,8 @@ const {
   getTicketPermissionOverwrites, 
   canCloseTicket, 
   canRenameTicket,
-  isTicketChannel 
+  isTicketChannel,
+  canManage
 } = require('./permissions')
 
 // Prepare ticket categories
@@ -283,12 +284,11 @@ async function closeTicket(interaction, categories) {
     }
   }
   
-  // Check permissions
-  const creatorId = channel.topic
-  if (!canCloseTicket(interaction.member, creatorId)) {
+  // Check permissions - only admins can close tickets
+  if (!canManage(interaction.member)) {
     return {
       success: false,
-      message: 'Anda tidak memiliki izin untuk menutup tiket ini.',
+      message: 'Hanya admin yang dapat menutup tiket.',
       ephemeral: true
     }
   }
@@ -304,7 +304,8 @@ async function closeTicket(interaction, categories) {
   }
   
   try {
-    await interaction.reply({ content: 'Menutup dan mengarsipkan tiket...', flags: 64 })
+    // Defer the reply to prevent timeout and avoid multiple replies
+    await interaction.deferReply({ ephemeral: true })
     
     // Step 1: Move to archive category (auto-archive)
     await channel.edit({ 
@@ -320,6 +321,7 @@ async function closeTicket(interaction, categories) {
     })
     
     // Step 3: Update permissions to remove send access for creator
+    const creatorId = channel.topic
     if (creatorId) {
       await channel.permissionOverwrites.edit(creatorId, {
         SendMessages: false
@@ -327,11 +329,14 @@ async function closeTicket(interaction, categories) {
     }
     
     // Step 4: Auto-archive ticket data in local storage
-    autoArchiveTicketData(channel.id, interaction.user.id)
+    const archiveResult = autoArchiveTicketData(channel.id, interaction.user.id)
+    if (!archiveResult) {
+      console.warn('Failed to save ticket data to local storage')
+    }
     
-    await interaction.followUp({ 
-      content: 'Tiket telah ditutup dan secara otomatis diarsipkan ke local storage.', 
-      flags: 64
+    // Send the confirmation message
+    await interaction.editReply({ 
+      content: 'Tiket telah ditutup dan secara otomatis diarsipkan ke local storage.' 
     })
     
     const archiveEmbed = new EmbedBuilder()

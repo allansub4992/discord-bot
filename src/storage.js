@@ -179,8 +179,19 @@ function archiveTicketData(channelId, archivedBy) {
 
 // Auto-archive ticket when closing (moved directly from active to archived)
 function autoArchiveTicketData(channelId, closedBy) {
+  // Ensure ticketsData is properly initialized
+  if (!ticketsData || !ticketsData.active_tickets) {
+    console.error('TicketsData not properly initialized')
+    return false
+  }
+  
   const ticketInfo = ticketsData.active_tickets[channelId]
   if (ticketInfo) {
+    // Ensure archived_tickets exists
+    if (!ticketsData.archived_tickets) {
+      ticketsData.archived_tickets = {}
+    }
+    
     const timestamp = new Date().toISOString()
     ticketsData.archived_tickets[channelId] = {
       ...ticketInfo,
@@ -191,6 +202,12 @@ function autoArchiveTicketData(channelId, closedBy) {
       auto_archived: true
     }
     delete ticketsData.active_tickets[channelId]
+    
+    // Ensure statistics exists
+    if (!ticketsData.statistics) {
+      ticketsData.statistics = { total_created: 0, total_closed: 0, total_archived: 0 }
+    }
+    
     ticketsData.statistics.total_closed++
     ticketsData.statistics.total_archived++
     return saveJSON(TICKETS_FILE, ticketsData)
