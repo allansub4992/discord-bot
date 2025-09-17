@@ -2,10 +2,10 @@
   "name": "bot-discord",
   "version": "1.0.0",
   "description": "",
-  "main": "discordTicketBot.js",
+  "main": "main.js",
   "scripts": {
-    "start": "node discordTicketBot.js",
-    "dev": "node discordTicketBot.js",
+    "start": "node main.js",
+    "dev": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
